@@ -1,17 +1,16 @@
 import React from 'react'
-import { StyleSheet, View, TextInput, Button, FlatList, Text, ActivityIndicator } from 'react-native'
-import films from '../Helpers/filmsData'
+import { StyleSheet, View, TextInput, Button, FlatList, ActivityIndicator } from 'react-native'
 import MovieItem from '../Components/MovieItem'
-import {getFilmsFromApiWithSearchedText} from '../API/TMDBapi'
+import {getFilmsFromApiWithSearchedText, getFilmDetailFromApi} from '../API/TMDBapi'
 
 class Search extends React.Component {
   searchedText: string = "";
   _searchingText: string ="";
+  _key:number = 0;
   page: number;
   totalPages: number;
   constructor(props){
     super(props)
-    console.log("YOLOOOOOOOO")
     this.state ={
       films: [],
       isLoading: false
@@ -19,7 +18,11 @@ class Search extends React.Component {
     this.page = 0
     this.totalPages = 0
   }
-
+  _displayDetailForFilm = (idFilm) => {
+    this.props.navigation.navigate("FilmDetail", {
+      filmId: idFilm
+    })
+  }
   _displayLoading(){
     if (this.state.isLoading){
       return (
@@ -56,6 +59,7 @@ class Search extends React.Component {
         this.page = data.page;
         this.totalPages = data.total_pages
       })
+
     }
       
   }
@@ -73,13 +77,15 @@ class Search extends React.Component {
           }}
         />
         <Button title='Search' onPress={() => this._loadFilms()}/>
-        <FlatList style={{flex: 1}}
-          data={this.state.films}
-          keyExtractor ={(item) => item.id.toString()}
-          renderItem={({item}) => <MovieItem film ={item} />} 
-          onEndReachedThreshold = {2}
-          onEndReached = {() => this._loadNextFilms()}
-          />
+        
+          <FlatList style={{flex: 1}}
+            data={this.state.films}
+            keyExtractor ={(item) => item.id.toString()+String(this._key++)}
+            renderItem={({item}) => <MovieItem film ={item} displayDetailForFilm = {this._displayDetailForFilm} />} 
+            onEndReachedThreshold = {2}
+            onEndReached = {() => this._loadNextFilms()}
+            />
+        
         {this._displayLoading()}
       </View>
     );
@@ -97,7 +103,6 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex:1, 
-    marginTop: 20, 
     padding: 10
   },
   loading_container: {

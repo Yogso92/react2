@@ -1,14 +1,15 @@
 import React from 'react'
-import {StyleSheet, Text, View, Image} from 'react-native'
+import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native'
 
 import {getImageFromApi} from '../API/TMDBapi'
 
 class MovieItem extends React.Component {
-    film : any;
     render () {
-        const film = this.props.film
+        const {film, displayDetailForFilm} = this.props
         return (
-            <View style= {styles.main_container}>
+            <TouchableOpacity style= {styles.main_container} onPress = {() => { console.log(film.id)
+                                                                                displayDetailForFilm(film.id) 
+                                                                                }}>
                 <Image style= {styles.img_style} 
                 source = {{uri : getImageFromApi(film.poster_path)}} />
                 <View style ={styles.text_container}>
@@ -19,7 +20,7 @@ class MovieItem extends React.Component {
                     <Text style= {styles.description} numberOfLines ={6}>{film.overview}</Text>    
                     <Text style= {styles.released}>Sorti le {film.release_date}</Text> 
                 </View>
-            </View>
+            </TouchableOpacity>
         )
     }
 }
