@@ -1,20 +1,28 @@
 import React from 'react'
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native'
-
 import {getImageFromApi} from '../API/TMDBapi'
 
 class MovieItem extends React.Component {
+    _displayTitle(film){
+        var title =""
+        if(film.isFilmFavorite){
+          title += "🖤 "
+        }
+        title += film.original_title
+        return (
+            <Text style = {styles.title_text} numberOfLines={2}>{title} </Text>
+        )
+      }
+
     render () {
         const {film, displayDetailForFilm} = this.props
         return (
-            <TouchableOpacity style= {styles.main_container} onPress = {() => { console.log(film.id)
-                                                                                displayDetailForFilm(film.id) 
-                                                                                }}>
+            <TouchableOpacity style= {styles.main_container} onPress = {() => displayDetailForFilm(film.id) }>
                 <Image style= {styles.img_style} 
                 source = {{uri : getImageFromApi(film.poster_path)}} />
                 <View style ={styles.text_container}>
                     <View style = {styles.title_rating_container}>
-                        <Text style = {styles.title_text} numberOfLines={2}>{film.original_title} </Text>
+                        {this._displayTitle(film)}
                         <Text style = {styles.rating_text}>{film.vote_average}</Text>
                     </View>
                     <Text style= {styles.description} numberOfLines ={6}>{film.overview}</Text>    
@@ -74,5 +82,6 @@ const styles = StyleSheet.create(
         }
     }
 )
+
 
 export default MovieItem

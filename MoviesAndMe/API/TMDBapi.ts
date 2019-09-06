@@ -11,7 +11,6 @@ export function getImageFromApi(name: string){
 }
 export function getFilmDetailFromApi(id: number){
   const url = 'https://api.themoviedb.org/3/movie/'+id.toString()+'?api_key='+API_TOKEN+'&language=fr'
-  console.log(url)
   return fetch(url)
     .then((response) => response.json())
     .catch((error => console.error(error)))

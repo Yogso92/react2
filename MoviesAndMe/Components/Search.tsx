@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, View, TextInput, Button, FlatList, ActivityIndicator } from 'react-native'
 import MovieItem from '../Components/MovieItem'
 import {getFilmsFromApiWithSearchedText, getFilmDetailFromApi} from '../API/TMDBapi'
+import {connect} from 'react-redux'
 
 class Search extends React.Component {
   searchedText: string = "";
@@ -30,6 +31,14 @@ class Search extends React.Component {
           <ActivityIndicator size='large' />
         </View>
       )
+    }
+  }
+  _isItemFavorite(id){
+    if (this.props.favoritesFilm.findIndex((item, index) => item.id === id) !== -1) {
+      return true
+    }
+    else{
+      return false
     }
   }
   _resetFilms(){
@@ -80,10 +89,11 @@ class Search extends React.Component {
         
           <FlatList style={{flex: 1}}
             data={this.state.films}
-            keyExtractor ={(item) => item.id.toString()+String(this._key++)}
-            renderItem={({item}) => <MovieItem film ={item} displayDetailForFilm = {this._displayDetailForFilm} />} 
+            keyExtractor ={(item) => item.id.toString()}
+            renderItem={({item}) => <MovieItem film ={Object.assign(item, {isFilmFavorite: this._isItemFavorite(item.id)}) } displayDetailForFilm = {this._displayDetailForFilm} />} 
             onEndReachedThreshold = {2}
             onEndReached = {() => this._loadNextFilms()}
+            extraData = {this.props.favoritesFilm} //component se re rend si extra data et data changent
             />
         
         {this._displayLoading()}
@@ -117,5 +127,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   }
 });
-
-export default Search;
+const mapStateToProps = (state) => {
+  return {
+      favoritesFilm: state.favoritesFilm
+  }
+}
+export default connect(mapStateToProps)(Search);
